@@ -24,6 +24,10 @@ unset($_SESSION['errores'], $_SESSION['viejo']);
     <input type="text" id="nombre" name="nombre" maxlength="100"
            value="<?= e($viejo['nombre'] ?? '') ?>" required>
 
+    <label for="asunto">Asunto</label>
+    <input type="text" id="asunto" name="asunto" maxlength="150"
+           value="<?= e($viejo['asunto'] ?? '') ?>" required>
+
     <label for="email">Correo electrónico</label>
     <input type="email" id="email" name="email" maxlength="150"
            value="<?= e($viejo['email'] ?? '') ?>" required>

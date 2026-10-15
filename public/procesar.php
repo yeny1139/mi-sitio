@@ -21,6 +21,7 @@ if ($tokenSesion === '' || !hash_equals($tokenSesion, $tokenEnviado)) {
 
 // 3. Limpiar los datos recibidos del formulario
 $nombre  = trim((string) ($_POST['nombre']  ?? ''));
+$asunto  = trim((string) ($_POST['asunto']  ?? ''));
 $email   = trim((string) ($_POST['email']   ?? ''));
 $mensaje = trim((string) ($_POST['mensaje'] ?? ''));
 
@@ -29,6 +30,9 @@ $errores = [];
 
 if ($nombre === '' || mb_strlen($nombre) > 100) {
     $errores[] = 'El nombre es obligatorio y no puede superar 100 caracteres.';
+}
+if ($asunto === '' || mb_strlen($asunto) > 150) {
+    $errores[] = 'El asunto es obligatorio y no puede superar 150 caracteres.';
 }
 if (mb_strlen($email) > 150 || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $errores[] = 'Ingresa un correo electrónico válido (máximo 150 caracteres).';
@@ -40,18 +44,19 @@ if (mb_strlen($mensaje) < 10 || mb_strlen($mensaje) > 2000) {
 // 5. Si hay errores, volver al formulario conservando lo que se escribió
 if ($errores) {
     $_SESSION['errores'] = $errores;
-    $_SESSION['viejo']   = compact('nombre', 'email', 'mensaje');
+    $_SESSION['viejo']   = compact('nombre', 'asunto', 'email', 'mensaje');
     header('Location: contacto.php');
     exit;
 }
 
 // 6. Guardar en PostgreSQL usando consulta preparada
 try {
-    $sql = 'INSERT INTO mensajes (nombre, email, mensaje)
-            VALUES (:nombre, :email, :mensaje)';
+    $sql = 'INSERT INTO mensajes (nombre, asunto, email, mensaje)
+            VALUES (:nombre, :asunto, :email, :mensaje)';
     $stmt = db()->prepare($sql);
     $stmt->execute([
         ':nombre'  => $nombre,
+        ':asunto'  => $asunto,
         ':email'   => $email,
         ':mensaje' => $mensaje,
     ]);
@@ -60,7 +65,7 @@ try {
     $_SESSION['errores'] = [
         'No pudimos guardar tu mensaje. Inténtalo de nuevo más tarde.',
     ];
-    $_SESSION['viejo']   = compact('nombre', 'email', 'mensaje');
+    $_SESSION['viejo']   = compact('nombre', 'asunto', 'email', 'mensaje');
     header('Location: contacto.php');
     exit;
 }
