@@ -1,12 +1,14 @@
+```php
 <?php
 $titulo = 'Contacto';
 require __DIR__ . '/../includes/header.php';
 
-// Recuperar errores y datos previos (se muestran una sola vez)
+// Recuperar errores y datos previos
 $errores = $_SESSION['errores'] ?? [];
-$viejo   = $_SESSION['viejo'] ?? [];
+$viejo = $_SESSION['viejo'] ?? [];
 unset($_SESSION['errores'], $_SESSION['viejo']);
 ?>
+
 <h1>Contacto</h1>
 
 <?php if ($errores): ?>
@@ -33,10 +35,35 @@ unset($_SESSION['errores'], $_SESSION['viejo']);
            value="<?= e($viejo['email'] ?? '') ?>" required>
 
     <label for="mensaje">Mensaje</label>
-    <textarea id="mensaje" name="mensaje" rows="5"
+    <textarea id="mensaje" name="mensaje" rows="5" maxlength="2000"
               required><?= e($viejo['mensaje'] ?? '') ?></textarea>
+
+    <small id="contador-mensaje">0 / 2000 caracteres</small>
 
     <button type="submit">Enviar</button>
 </form>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const textarea = document.getElementById('mensaje');
+    const contador = document.getElementById('contador-mensaje');
+    const max = 2000;
+
+    function actualizarContador() {
+        const largo = textarea.value.length;
+        contador.textContent = `${largo} / ${max} caracteres`;
+
+        if (largo > max) {
+            contador.style.color = 'red';
+        } else {
+            contador.style.color = '#666';
+        }
+    }
+
+    textarea.addEventListener('input', actualizarContador);
+    actualizarContador();
+});
+</script>
+
 <?php require __DIR__ . '/../includes/footer.php'; ?>
+```
